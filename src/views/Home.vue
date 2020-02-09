@@ -21,10 +21,11 @@
 
 <script>
 // @ is an alias to /src
+import axios from 'axios'
+
 import Header from '@/components/Header.vue'
 import Container from '@/components/Container.vue'
 import Footer from '@/components/Footer.vue'
-import posts from '@/data/posts'
 import filters from '@/data/filters'
 import userImage from '@/data/userImage'
 
@@ -32,7 +33,7 @@ export default {
   name: 'Home',
   data () {
     return {
-      posts,
+      posts: [],
       filters,
       caption: '',
       image: '',
@@ -43,6 +44,14 @@ export default {
     Header,
     Container,
     Footer
+  },
+  created () {
+    axios.get(`http://localhost:3000/api/posts`)
+      .then(response => {
+        this.posts = response.data
+      })
+      .catch(e => console.error(e)
+      )
   },
   methods: {
     handleGoToHome () {
@@ -60,6 +69,7 @@ export default {
         filter: this.filterType
       }
       this.posts.unshift(post)
+      this.sendPost(post)
       this.handleGoToHome()
     },
     handleUploadImage (ev) {
@@ -76,6 +86,11 @@ export default {
     },
     handleSelectedFilter (ev) {
       this.filterType = ev.filter
+    },
+    sendPost (post) {
+      axios.post(`http://localhost:3000/api/posts`, post)
+        .then(response => {})
+        .catch(e => console.error(e))
     }
   }
 }
